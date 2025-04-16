@@ -1,0 +1,95 @@
+---
+title: "Gossip Girl Viewership Analysis"
+author: "Kevalyn"
+date: "17/04/2025"
+format: html
+execute:
+  echo: fenced
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(knitr)
+```
+
+------------------------------------------------------------------------
+
+# *Gossip Girl*
+
+*Gossip Girl* is a teen drama series that aired on **The CW** from 2007 to 2012. The story follows elite teenagers living in Manhattan’s Upper East Side, whose secrets are constantly exposed by an anonymous blogger—*Gossip Girl* herself. The show gained a cult following and had a strong cultural impact.
+
+------------------------------------------------------------------------
+
+# The Title Card
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Gossip_girl_titlecard.svg/500px-Gossip_girl_titlecard.svg.png)
+
+------------------------------------------------------------------------
+
+# Viewership Summary
+
+Here is a summary of the **average number of viewers (in millions)** for each season of *Gossip Girl*.
+
+```{r}
+#| label: load-data
+season <- 1:6
+viewers <- c(2.48, 2.81, 2.02, 1.44, 1.28, 1.02)
+
+gg_data <- data.frame(Season = season, Viewers = viewers)
+summary(gg_data$Viewers)
+```
+
+```{r}
+#| label: table
+kable(gg_data, caption = "Average Viewers (Millions) by Season")
+```
+
+------------------------------------------------------------------------
+
+# Viewership Over Time
+
+```{r}
+#| label: plot-viewers
+#| fig-cap: "Gossip Girl Viewership by Season"
+ggplot(gg_data, aes(x = Season, y = Viewers)) +
+  geom_line(color = "purple", size = 1.2) +
+  geom_point(color = "hotpink", size = 3) +
+  theme_minimal() +
+  labs(title = "Viewership by Season",
+       x = "Season",
+       y = "Viewers (millions)")
+```
+
+------------------------------------------------------------------------
+
+# Changes in Viewership
+
+```{r}
+#| label: change
+gg_data$Change <- c(NA, diff(gg_data$Viewers))
+kable(gg_data, caption = "Season-to-Season Change in Viewers")
+```
+
+```{r}
+#| label: plot-change
+#| fig-cap: "Viewership Change from Season to Season"
+ggplot(gg_data, aes(x = Season, y = Change)) +
+  geom_col(fill = "lightblue") +
+  theme_minimal() +
+  labs(title = "Change in Average Viewership",
+       x = "Season",
+       y = "Change (millions)")
+```
+
+------------------------------------------------------------------------
+
+# What Happened?
+
+The viewership of *Gossip Girl* peaked at **Season 2**, with `r max(gg_data$Viewers)` million viewers.  
+The steepest decline occurred between **Season 2 and Season 3**, dropping by `r round(gg_data$Change[3], 2)` million.  
+By **Season 6**, average viewership had decreased to just `r gg_data$Viewers[6]` million.  
+Despite this drop, the show remains an icon of 2000s pop culture.
+
+> xoxo, Gossip Girl 💋
