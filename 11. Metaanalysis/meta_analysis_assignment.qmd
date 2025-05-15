@@ -1,0 +1,76 @@
+---
+title: "Meta-analysis: Toy Preferences in Children"
+author: "Your Name"
+format: html
+execute:
+  echo: true
+---
+
+```{r setup, include=FALSE}
+library(meta)
+library(readxl)
+library(dplyr)
+```
+
+## Load and Prepare Data
+
+```{r}
+data <- read_excel("data/metaanalysis_data.xlsx")
+
+meta_model <- metacont(
+  n.e = data$N_boys,
+  mean.e = data$Mean_boys_play_male,
+  sd.e = data$SD_boys_play_male,
+  n.c = data$N_girls,
+  mean.c = data$Mean_girls_play_male,
+  sd.c = data$SD_girls_play_male,
+  data = data,
+  studlab = data$Study,
+  sm = "SMD",
+  common = TRUE,
+  random = TRUE,
+  method.random.ci = "HK"
+)
+```
+
+## Forest Plot
+
+```{r}
+forest(meta_model)
+```
+
+## Funnel Plot
+
+```{r}
+funnel(meta_model, main = "Funnel Plot (Publication Bias Check)")
+```
+
+## Meta-regression: Study Design & Country
+
+```{r}
+# Rename and convert quality/method columns
+data <- data %>%
+  rename(
+    Neutral_toys = `Neutral toys`,
+    Parent_present = `Parent present`
+  )
+
+data$Neutral_toys <- as.factor(data$Neutral_toys)
+data$Parent_present <- as.factor(data$Parent_present)
+
+metareg(x=meta_model, ~ Neutral_toys + Parent_present + Setting + Country, data = data)
+```
+
+## Meta-regression: Author Gender
+
+```{r}
+data$Author_female_ratio <- data$`Female authors` / (data$`Female authors` + data$`Male authors`)
+metareg(x=meta_model, ~ Author_female_ratio, data = data)
+```
+
+## Conclusion
+
+- The overall effect size suggests boys spend more time playing with male-typed toys than girls.
+- The funnel plot indicates possible bias (or not).
+- Factors like parent presence, toy neutrality, and gender equality (Country) may influence the result.
+- Author gender distribution might also correlate with effect size.
